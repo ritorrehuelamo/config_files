@@ -1,136 +1,87 @@
-" --------------------------------
-" Plugins
-" --------------------------------
-set nocompatible              " be iMproved, required
-filetype off                  " required
+call plug#begin('~/.local/share/nvim/plugged')
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+Plug 'tpope/vim-surround'
+Plug 'joshdick/onedark.vim'
+Plug 'scrooloose/nerdtree'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes' " Temas para airline 
+Plug 'neoclide/coc.nvim', { 'branch': 'release' }
 
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
+call plug#end()
 
-" Plugins
-Plugin 'tpope/vim-fugitive'
-Plugin 'tpope/vim-surround'
-Plugin 'tpope/vim-commentary' " gc to comment out
-Plugin 'pangloss/vim-javascript'
-Plugin 'ctrlpvim/ctrlp.vim'
-let g:ctrlp_working_path_mode = 0 " make ctrlp work from current dir
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
-Plugin 'luochen1990/rainbow'
-Plugin 'kana/vim-textobj-user'
-Plugin 'kana/vim-textobj-line'
-Plugin 'kana/vim-textobj-entire'
-Plugin 'szw/vim-g'
-Plugin 'jiangmiao/auto-pairs'
-Plugin 'fatih/vim-go' " golang development 
-Plugin 'jamesroutley/vim-logbook'
-Plugin 'sheerun/vim-polyglot'   " syntax highlighting in most languages
-Plugin 'joshdick/onedark.vim'   " Atom-style dark theme
-Plugin 'scrooloose/nerdtree'
-Plugin 'Xuyuanp/nerdtree-git-plugin'
-Plugin 'mattn/emmet-vim'
-Plugin 'airblade/vim-gitgutter'
-Plugin 'dracula/vim'
-Plugin 'w0rp/ale'
+" Configuraciones
+set title " Muestra el nombre del archivo en la ventana de la terminal
+set number " Muestra los números de las lineas
+set mouse=a " Permite la integración del mouse
 
-" All of your Plugins must be added before the following line
-call vundle#end()
-filetype plugin indent on
+set termguicolors " Activa true colors en la terminal
+colorscheme onedark " Activa tema onedark
 
-" --------------------------------
-" Pretty things
-" --------------------------------
-syntax on
-color dracula
+set cursorline " Resalta la línea actual
+set colorcolumn=120 " Muestra la columna límite a 120 caracteres
 
-" Set Airline bar theme
-let g:airline_theme='bubblegum'
-
-"rainbow Plugin Options (luochen1990/rainbow)
-let g:rainbow_active = 1    " 0 if you want to enable it later via :RainbowToggle
-
-" Colour at column 80
-set colorcolumn=80
-
-" --------------------------------
-" Basic stuff
-" --------------------------------
-let g:mapleader = " " " Set leader to spacebar 
-set spelllang=en_gb
-set backspace=indent,eol,start " Bring backspace to life
-set number          " Line numbers
-set relativenumber  " Relative line numbers
-set hlsearch        " Highlight whole word when searching
-set ignorecase      " Ignore case when searching...
-set smartcase       " ...except when serach query contains a capital letter
-set autoread        " Auto load files if they change on disc
-map <Leader>p :set paste<CR><esc>"*]p:set nopaste<cr>
-map <Leader>y "*y  )
-map <Leader><Leader> :w<CR>
-inoremap jj <ESC>:w<CR>
-     
-" Pasting - indent last pasted
-nnoremap gz '[='] 
-
-" Disable highlight when <leader><cr> is pressed
-map <silent> <leader><ESC> :noh<cr>
-
-"Cursor
-if exists('$TMUX')
-  let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
-  let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
-else
-  let &t_SI = "\<Esc>]50;CursorShape=1\x7"
-  let &t_EI = "\<Esc>]50;CursorShape=0\x7"
-endif
-
-" Open current file in a new vertical split with '='
-nnoremap = :vsplit<cr>
-
-" Easy split navigation
-map <C-j> <C-w>j
-map <C-k> <C-W>k
-map <C-h> <C-W>h
-map <C-l> <C-W>l
-
-" Simplify using tabs
-nnoremap ˙ gT
-nnoremap ¬ gt
-nnoremap T :tabnew<cr>
-
-" Open new splits to right and bottom 
-set splitbelow
-set splitright
-
-"Tab completion
-set wildmenu
-set wildmode=list:longest,list:full
-function! InsertTabWrapper()
-  let col = col('.') - 1
-  if !col || getline('.')[col - 1] !~ '\k'
-    return "\<tab>"
-  else
-    return "\<c-p>"
-  endif
-    endfunction
-inoremap <Tab> <c-r>=InsertTabWrapper()<cr>
-inoremap <S-Tab> <c-n>
-
-" Tab size
+" Identación a 2 espacios
 set tabstop=2
-set softtabstop=2
 set shiftwidth=2
-set expandtab
+set softtabstop=2
+set shiftround
 
-" Disable swap files
-set noswapfile
+function! AirlineInit()
+	" Airline plugin configuration
+	let g:airline#extensions#tabline#enabled = 1 " Mostrar buffers abiertos (como pestañas)
+	let g:airline#extensions#tabline#fnamemod = ':t' " Mostrar sólo el nombre del archivo
+	let g:airline#extensions#tabline#left_sep = ' '
+	let g:airline#extensions#tabline#formatter = 'default'
+endfunction
 
-" Disable arrow keys in Escape mode
-map <up> <nop>
-map <down> <nop>
-map <left> <nop>
-map <right> <nop>
+autocmd VimEnter * call AirlineInit()
+
+" Cargar fuente Powerline y símbolos (ver nota)
+let g:airline_powerline_fonts = 1
+
+set noshowmode " No mostrar el modo actual (ya lo muestra la barra de estado)
+
+" NerdTree config
+let g:NERDTreeChDirMode = 2 " Cambia el directorio actual al nodo padre actual
+
+" Abrir/cerrar NERDTree con F2
+map <F2> :NERDTreeToggle<CR>
+
+" COC Configurations
+" TextEdit might fail if hidden is not set.
+set hidden
+
+" Some servers have issues with backup files
+set nobackup
+set nowritebackup
+
+" Give more space for displaying messages.
+set cmdheight=2
+
+" Having longer updatetime (default is 4000ms = 4s) leads to noticeable
+" delays and poor user experience
+set updatetime=300
+
+" Don't pass messages to |ins-completation-menu|.
+set shortmess+=c
+
+" Always show the signcolumn, otherwise it would shift the text each time
+" diagnostics appear/become resolved.
+set signcolumn=yes
+
+" Use tab for trigger completion with characters ahead and navigate.
+" NOTE: Use command ':verbose imap <tab>' to make suer tab is not mapped by
+" other plugin before putting this into your configuration.
+inoremap <silent><expr> <TAB>
+	\ pumvisible() ? "\<C-n>" :
+	\ <SID>check_back_space() ? "\<TAB>" :
+	\ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() = "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+	let col = col(".") - 1
+	return !col || getline('.')[col - 1] =~# '\s'
+endfunction
+
+" Use <c-space> to trigger completion
+inoremap <silent><expr> <c-space> coc#refresh()
